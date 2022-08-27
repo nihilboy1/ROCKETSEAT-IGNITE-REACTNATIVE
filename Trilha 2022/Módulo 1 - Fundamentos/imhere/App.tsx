@@ -1,11 +1,5 @@
-import { StatusBar } from 'expo-status-bar'
-import { Text } from 'react-native'
+import { Home } from './src/screens/Home/Index'
 
 export default function App() {
-  return (
-    <>
-      <Text>Samu</Text>
-      <StatusBar style="dark" />
-    </>
-  )
+  return <Home />
 }
