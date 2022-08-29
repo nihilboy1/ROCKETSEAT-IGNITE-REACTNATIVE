@@ -26,7 +26,7 @@ export const S = StyleSheet.create({
     color: '#FFFFFF',
     padding: 16,
     fontSize: 16,
-    marginRight: 12,
+    marginRight: 12
   },
 
   buttonText: {
@@ -38,16 +38,20 @@ export const S = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 5,
-    backgroundColor: "#31cf67",
+    backgroundColor: '#31cf67',
     alignItems: 'center',
-    justifyContent: "center"
+    justifyContent: 'center'
   },
 
-  form:{
-    width: "100%",
-    flexDirection: "row",
+  form: {
+    width: '100%',
+    flexDirection: 'row',
     marginTop: 20,
     marginBottom: 12
-
+  },
+  listEmptyText: {
+    color: '#fff',
+    fontSize: 18,
+    textAlign: 'center'
   }
 })
