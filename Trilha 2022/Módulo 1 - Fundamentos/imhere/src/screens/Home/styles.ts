@@ -8,7 +8,7 @@ export const S = StyleSheet.create({
   },
 
   eventName: {
-    color: 'FFFFFF',
+    color: '#FFFFFF',
     fontSize: 24,
     fontWeight: 'bold',
     marginTop: 48
