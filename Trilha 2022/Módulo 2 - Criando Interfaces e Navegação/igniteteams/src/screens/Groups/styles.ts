@@ -1,4 +1,3 @@
-import { CaretLeft } from 'phosphor-react-native'
 import styled from 'styled-components/native'
 
 export const Container = styled.View`
@@ -6,4 +5,3 @@ export const Container = styled.View`
   background-color: ${({ theme }) => theme.colors.gray_600};
   padding: 24px;
 `
-

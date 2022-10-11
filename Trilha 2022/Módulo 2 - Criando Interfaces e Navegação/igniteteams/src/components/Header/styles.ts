@@ -17,6 +17,7 @@ export const BackButton = styled.TouchableOpacity`
   flex: 1;
 `
 
+// abaixo eu estou abrindo um componente do phosphoricons pelo styledcomponentes, e acessando suas propriedades normalmente
 export const BackIcon = styled(CaretLeft).attrs(({ theme }) => ({
   size: 32,
   color: theme.colors.white
