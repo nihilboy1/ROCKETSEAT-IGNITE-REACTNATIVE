@@ -1,3 +1,4 @@
+import { Button } from '@components/Button'
 import { GroupCard } from '@components/GroupCard'
 import { Header } from '@components/Header'
 import { Highlight } from '@components/Highlight'
@@ -20,6 +21,7 @@ export function Groups() {
         keyExtractor={item => item}
         renderItem={({ item }) => <GroupCard title={item} />}
       />
+      <Button title="Criar nova turma" />
     </Container>
   )
 }
