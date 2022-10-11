@@ -13,6 +13,7 @@ export function Groups() {
       <Header />
       <Highlight title="Turmas" subtitle="Jogue com a sua turma!" />
       <FlatList
+      showsVerticalScrollIndicator={false}
         contentContainerStyle={groups.length === 0 && { flex: 1 }}
         ListEmptyComponent={() => (
           <ListEmpty message="Nenhuma turma cadastrada ainda..." />
