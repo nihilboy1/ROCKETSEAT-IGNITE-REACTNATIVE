@@ -3,8 +3,9 @@ import { GroupCard } from '@components/GroupCard'
 import { Header } from '@components/Header'
 import { Highlight } from '@components/Highlight'
 import { ListEmpty } from '@components/ListEmpty'
-import { useNavigation } from '@react-navigation/native'
-import { useState } from 'react'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import { groupGetAll } from '@storage/group/groupGetAll'
+import { useCallback, useState } from 'react'
 import { FlatList } from 'react-native'
 import { Container } from './styles'
 
@@ -16,6 +17,26 @@ export function Groups() {
   function moveToNewGroup() {
     navigate('new')
   }
+
+  async function fetchGroups() {
+    try {
+      const data = await groupGetAll()
+      setGroups(data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  function handleOpenGroup(group: string) {
+    navigate('players', { group })
+  }
+
+  // dispara a função quando essa tela for o foco
+  useFocusEffect(
+    useCallback(() => {
+      fetchGroups()
+    }, [])
+  )
 
   return (
     <Container>
@@ -29,7 +50,14 @@ export function Groups() {
         )}
         data={groups}
         keyExtractor={item => item}
-        renderItem={({ item }) => <GroupCard title={item} />}
+        renderItem={({ item }) => (
+          <GroupCard
+            onPress={() => {
+              handleOpenGroup(item)
+            }}
+            title={item}
+          />
+        )}
       />
       <Button title="Criar nova turma" onPress={moveToNewGroup} />
     </Container>

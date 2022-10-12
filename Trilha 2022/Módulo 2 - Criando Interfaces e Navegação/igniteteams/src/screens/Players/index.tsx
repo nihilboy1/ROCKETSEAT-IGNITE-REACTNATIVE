@@ -6,9 +6,15 @@ import { Highlight } from '@components/Highlight'
 import { Input } from '@components/Input'
 import { ListEmpty } from '@components/ListEmpty'
 import { PlayerCard } from '@components/PlayerCard'
+import { useRoute } from '@react-navigation/native'
 import { useState } from 'react'
 import { FlatList } from 'react-native'
 import { Container, Form, HeaderList, PlayerAmount } from './styles'
+
+
+type routeParams = {
+  group: string
+}
 
 export function Players() {
   const [team, setTeam] = useState('time a')
@@ -22,11 +28,15 @@ export function Players() {
     'Gog',
     'Floq'
   ])
+
+  const route = useRoute()
+  const { group } = route.params as routeParams
+
   return (
     <Container>
       <Header showBackButton />
       <Highlight
-        title="Nome da turma"
+        title={group}
         subtitle="Adicione a galera e separe os times"
       />
       <Form>
@@ -64,7 +74,7 @@ export function Players() {
         ]}
       />
 
-      <Button title='Remover Turma' type='secondary' />
+      <Button title="Remover Turma" type="secondary" />
     </Container>
   )
 }
