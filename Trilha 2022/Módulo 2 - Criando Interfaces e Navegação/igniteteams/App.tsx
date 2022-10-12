@@ -4,7 +4,7 @@ import {
   Roboto_700Bold,
   useFonts
 } from '@expo-google-fonts/roboto'
-import { Players } from '@screens/Players'
+import { Routes } from '@routes/index'
 import { StatusBar } from 'react-native'
 import { ThemeProvider } from 'styled-components'
 import theme from './src/theme'
@@ -18,7 +18,7 @@ export default function App() {
         backgroundColor="transparent"
         translucent
       />
-      {fontsHasBeenLoaded ? <Players /> : <Loading />}
+      {fontsHasBeenLoaded ? <Routes /> : <Loading />}
     </ThemeProvider>
   )
 }
