@@ -3,16 +3,23 @@ import BackgroundImage from "@assets/background.png";
 import LogoSvg from "@assets/logo.svg";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
+import { useNavigation } from "@react-navigation/native";
 
 export function SignUp() {
+  const navigation = useNavigation();
+
+  function moveToSignIn() {
+    navigation.goBack();
+  }
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator
     >
-      <VStack flex="1" bg="gray.700" px="10" pb="12">
+      <VStack flex="1" px="10" pb="12">
         <Image
           source={BackgroundImage}
+          defaultSource={BackgroundImage}
           alt="Mulheres praticando spinning"
           resizeMode="contain"
           position="absolute"
@@ -36,7 +43,12 @@ export function SignUp() {
           />
           <Input placeholder="Senha" secureTextEntry />
           <Button title="Criar e entrar" />
-          <Button mt={12} title="Voltar para o login" variant="outline" />
+          <Button
+            mt={12}
+            title="Voltar para o login"
+            variant="outline"
+            onPress={moveToSignIn}
+          />
         </Center>
       </VStack>
     </ScrollView>
