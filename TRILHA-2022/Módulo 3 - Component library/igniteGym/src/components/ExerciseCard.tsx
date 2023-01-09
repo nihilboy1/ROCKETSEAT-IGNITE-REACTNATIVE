@@ -16,7 +16,7 @@ export function ExerciseCard({ ...rest }: Props) {
         mb="3"
       >
         <Image
-          resizeMode="center"
+          resizeMode="contain"
           w="16"
           h="16"
           mr="4"
