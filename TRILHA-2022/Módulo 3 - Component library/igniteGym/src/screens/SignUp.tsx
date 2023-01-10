@@ -4,9 +4,50 @@ import LogoSvg from "@assets/logo.svg";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { useNavigation } from "@react-navigation/native";
+import { useForm, Controller } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+type FormDataProps = {
+  name: string;
+  email: string;
+  password: string;
+  password_confirm: string;
+};
+
+const signUpSchema = yup.object({
+  name: yup.string().required('O campo "Nome" é obrigatório'),
+  email: yup
+    .string()
+    .required('O campo "E-mail" é obrigatório')
+    .email("E-mail inválido"),
+  password: yup
+    .string()
+    .required("Informe uma senha")
+    .min(6, "A senha deve ter ao menos 6 digitos"),
+  password_confirm: yup
+    .string()
+    .required("Confirme a senha")
+    .oneOf([yup.ref("password"), null], "As senhas precisam ser iguais"),
+});
 
 export function SignUp() {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({ resolver: yupResolver(signUpSchema) });
+
   const navigation = useNavigation();
+
+  function handleSignUp({
+    email,
+    name,
+    password,
+    password_confirm,
+  }: FormDataProps) {
+    console.log(name, email, password, password_confirm);
+  }
 
   function moveToSignIn() {
     navigation.goBack();
@@ -35,14 +76,62 @@ export function SignUp() {
           <Heading color="gray.100" fontSize="xl" mb="6" fontFamily="heading">
             Cadastro
           </Heading>
-          <Input placeholder="Nome" />
-          <Input
-            placeholder="Email"
-            keyboardType="email-address"
-            autoCapitalize="none"
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Nome"
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.name?.message}
+              />
+            )}
           />
-          <Input placeholder="Senha" secureTextEntry />
-          <Button title="Criar e entrar" />
+
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="E-mail"
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.email?.message}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="password"
+            rules={{ required: "O campo 'Nome' não pode estar em branco" }}
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Senha"
+                secureTextEntry
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.password?.message}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="password_confirm"
+            rules={{ required: "O campo 'Nome' não pode estar em branco" }}
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Confirmar senha"
+                secureTextEntry
+                onChangeText={onChange}
+                errorMessage={errors.password_confirm?.message}
+                value={value}
+                onSubmitEditing={handleSubmit(handleSignUp)}
+              />
+            )}
+          />
+          <Button title="Criar e entrar" onPress={handleSubmit(handleSignUp)} />
           <Button
             mt={12}
             title="Voltar para o login"
