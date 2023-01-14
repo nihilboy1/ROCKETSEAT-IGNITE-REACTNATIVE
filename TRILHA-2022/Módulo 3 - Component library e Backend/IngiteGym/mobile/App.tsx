@@ -8,7 +8,9 @@ import {
 import { Loading } from "@components/Loading";
 import { THEME } from "./src/theme";
 import { Routes } from "@routes/index";
+import { AuthContext } from "@contexts/AuthContext";
 export default function App() {
+  const { Provider } = AuthContext;
   const [fontsLoaded] = useFonts({ Roboto_400Regular, Roboto_700Bold });
   return (
     <NativeBaseProvider theme={THEME}>
@@ -17,7 +19,9 @@ export default function App() {
         barStyle="light-content"
         translucent
       />
-      {fontsLoaded ? <Routes /> : <Loading />}
+      <Provider value={{ id: 1 }}>
+        {fontsLoaded ? <Routes /> : <Loading />}
+      </Provider>
     </NativeBaseProvider>
   );
 }
