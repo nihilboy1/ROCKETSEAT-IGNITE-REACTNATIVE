@@ -17,6 +17,8 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { api } from "@services/api";
 import { AppError } from "@utils/AppError";
+import { useState } from "react";
+import { useAuthContext } from "@hooks/useAuthContext";
 
 type FormDataProps = {
   name: string;
@@ -42,6 +44,10 @@ const signUpSchema = yup.object({
 });
 
 export function SignUp() {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { signIn } = useAuthContext();
+
   const toast = useToast();
   const {
     control,
@@ -53,9 +59,14 @@ export function SignUp() {
 
   async function handleSignUp({ email, name, password }: FormDataProps) {
     try {
-      const res = await api.post("/users", { email, name, password });
-      console.log(res.data);
+      setIsLoading(true);
+      await api.post("/users", { email, name, password });
+      console.log("Cadastrou o usuário com sucesso");
+      await signIn(email, password);
+      console.log("realizou o login com sucesso");
+      
     } catch (error) {
+      setIsLoading(false);
       const isAppError = error instanceof AppError;
       const title = isAppError
         ? error.message
@@ -113,6 +124,7 @@ export function SignUp() {
                 onChangeText={onChange}
                 value={value}
                 errorMessage={errors.email?.message}
+                autoCapitalize="none"
               />
             )}
           />
@@ -146,7 +158,11 @@ export function SignUp() {
               />
             )}
           />
-          <Button title="Criar e entrar" onPress={handleSubmit(handleSignUp)} />
+          <Button
+            title="Criar e entrar"
+            onPress={handleSubmit(handleSignUp)}
+            isLoading={isLoading}
+          />
           <Button
             mt={12}
             title="Voltar para o login"

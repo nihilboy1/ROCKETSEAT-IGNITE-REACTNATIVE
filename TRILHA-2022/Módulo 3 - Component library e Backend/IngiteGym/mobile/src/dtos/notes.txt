@@ -1,0 +1,1 @@
+d.t.o. significa data transfer object, ou "Objeto de transferência de dados"
