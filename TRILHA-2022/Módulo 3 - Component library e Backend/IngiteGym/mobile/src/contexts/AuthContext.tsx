@@ -3,10 +3,15 @@ import { ReactNode, createContext, useEffect, useState } from "react";
 import { api } from "@services/api";
 import {
   storageUserGet,
-  storageUserSave,
   storageUserRemove,
+  storageUserSave,
 } from "@storage/storageUser";
 import { UserDTO } from "@dtos/UserDTO";
+import {
+  storageAuthTokenGet,
+  storageAuthTokenRemove,
+  storageAuthTokenSave,
+} from "@storage/storageAuthToken";
 
 // essa é a tipagem geral do contexto, por isso ela recebe como um dos vários objetos possiveis, o UserDTO
 export type AuthContextDataProps = {
@@ -29,23 +34,38 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   const [user, setUser] = useState<UserDTO>({} as UserDTO);
   const [checkingUserSession, setCheckingUserSession] = useState(true);
 
+  function userAndTokenUpdate(userData: UserDTO, userToken: string) {
+    api.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
+    setUser(userData);
+  }
+
+  async function storageUserAndTokenSave(userData: UserDTO, userToken: string) {
+    try {
+      setCheckingUserSession(true);
+      await storageUserSave(userData);
+      await storageAuthTokenSave(userToken);
+    } catch (error) {
+      throw error;
+    } finally {
+      setCheckingUserSession(false);
+    }
+  }
+
   async function signIn(email: string, password: string) {
     try {
       // vai até o banco de dados e testa se o email e senha constam na base. Se constarem, a api retorna os dados do usuário, se não, retorna undefined
-      console.log("Entrou no try do login");
-      const {
-        data: { user },
-      } = await api.post("/sessions", { email, password });
+      const { data } = await api.post("/sessions", { email, password });
       // aqui eu testo se o retorno foi de um usuário valido
-      console.log("Retornou com os dados da api");
-      if (user) {
+      if (data.user && data.token) {
+        setCheckingUserSession(true);
         // se for, eu logo o usuário
-        setUser(user);
-        await storageUserSave(user);
-        console.log("Salvou o usuário logado no AS");
+        await storageUserAndTokenSave(data.user, data.token);
+        userAndTokenUpdate(data.user, data.token);
       }
     } catch (error) {
       throw error;
+    } finally {
+      setCheckingUserSession(false);
     }
   }
 
@@ -54,6 +74,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       setCheckingUserSession(true);
       setUser({} as UserDTO);
       await storageUserRemove();
+      await storageAuthTokenRemove();
     } catch (error) {
       throw error;
     } finally {
@@ -63,10 +84,12 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
   async function loadUserData() {
     try {
+      setCheckingUserSession(true);
       const loggedUser = await storageUserGet();
+      const token = await storageAuthTokenGet();
 
-      if (loggedUser) {
-        setUser(loggedUser);
+      if (loggedUser && token) {
+        userAndTokenUpdate(loggedUser, token);
       }
     } catch (error) {
       throw error;
