@@ -18,6 +18,7 @@ export type AuthContextDataProps = {
   user: UserDTO;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  updateUserProfile: (userUpdated: UserDTO) => Promise<void>;
   checkingUserSession: boolean;
 };
 // Aqui eu crio o Contexto de fato, passando pra ele, a tipagem geral, de todos os objetos que ele pode receber. Ao passar o tipo no generics e deixar o objeto inicial vazio, ele da erro, por isso é necessário forçar a tipagem do objeto inicial como a mesma do generic
@@ -82,6 +83,15 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     }
   }
 
+  async function updateUserProfile(userUpdated: UserDTO) {
+    try {
+      setUser(userUpdated);
+      await storageUserSave(userUpdated);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async function loadUserData() {
     try {
       setCheckingUserSession(true);
@@ -104,7 +114,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
   return (
     <AuthContext.Provider
-      value={{ user, signIn, checkingUserSession, signOut }}
+      value={{ user, signIn, checkingUserSession, signOut, updateUserProfile }}
     >
       {children}
     </AuthContext.Provider>
