@@ -11,6 +11,7 @@ import {
   Heading,
   useToast,
 } from "native-base";
+import defaultUserAvatarImg from "@assets/userPhotoDefault.png";
 import { useState } from "react";
 import { TouchableOpacity } from "react-native";
 import * as FileSystem from "expo-file-system";
@@ -57,9 +58,7 @@ const profileSchema = yup.object({
 export function Profile() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [avatarIsLoading, setAvatarIsLoading] = useState(false);
-  const [userAvatarURI, setUserAvatarURI] = useState<string>(
-    "https://github.com/nihilboy1.png"
-  );
+
   const { user, updateUserProfile } = useAuthContext();
   const toast = useToast();
   const {
@@ -118,7 +117,6 @@ export function Profile() {
         const uri = result.assets[0].uri;
         const photoInfo = await FileSystem.getInfoAsync(uri);
         const photoInMB = photoInfo.size && photoInfo.size / 1024 / 1024;
-
         if (photoInMB && photoInMB > 3) {
           return toast.show({
             title: "Essa imagem é muito grande, escolha uma de até 3MB",
@@ -129,10 +127,38 @@ export function Profile() {
             _title: { textAlign: "center" },
           });
         }
-        setUserAvatarURI(uri);
-      }
+        const fileExtension = uri.split(".").pop();
+        const photoFile = {
+          name: `${user.name}.${fileExtension}`.toLowerCase(),
+          uri: uri,
+          type: `${result.assets[0].type}/${fileExtension}`,
+        } as any;
 
-      return;
+        const userPhotoUploadForm = new FormData();
+        userPhotoUploadForm.append("avatar", photoFile);
+
+        const avatarUpdateResponse = await api.patch(
+          "/users/avatar",
+          userPhotoUploadForm,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        const userUpdated = user;
+        userUpdated.avatar = avatarUpdateResponse.data.avatar;
+
+        await updateUserProfile(userUpdated);
+        console.log(userUpdated);
+
+        toast.show({
+          title: "Foto atualizada com sucesso",
+          placement: "top",
+          bgColor: "green.500",
+        });
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -156,7 +182,11 @@ export function Profile() {
               />
             ) : (
               <Avatar
-                source={{ uri: userAvatarURI }}
+                source={
+                  user.avatar
+                    ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` }
+                    : defaultUserAvatarImg
+                }
                 alt="Foto so usuário"
                 size={PHOTO_SIZE}
               />
