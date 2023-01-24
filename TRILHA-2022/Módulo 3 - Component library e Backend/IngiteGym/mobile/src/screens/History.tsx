@@ -1,12 +1,13 @@
 import { HistoryCard } from "@components/HistoryCard";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { AppError } from "@utils/AppError";
-import { Heading, SectionList, VStack, Text } from "native-base";
+import { Heading, SectionList, VStack, Text, Center } from "native-base";
 import { useCallback, useState } from "react";
 import { useToast } from "native-base";
 import { api } from "@services/api";
 import { useFocusEffect } from "@react-navigation/native";
 import { HistoryByDayDTO } from "@dtos/HistoryByDayDTO";
+import { Loading } from "@components/Loading";
 
 export function History() {
   const toast = useToast();
@@ -39,34 +40,39 @@ export function History() {
   return (
     <VStack flex={1}>
       <ScreenHeader title="Histórico de Exercicios" />
-      <SectionList
-        px="6"
-        showsVerticalScrollIndicator={false}
-        sections={historyByDay}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <HistoryCard data={item} />}
-        renderSectionHeader={({ section }) => (
-          <Heading
-            color="gray.200"
-            fontSize="md"
-            mt="10"
-            mb="3"
-            fontFamily="heading"
-          >
-            {section.title}
-          </Heading>
-        )}
-        contentContainerStyle={
-          historyByDay.length === 0
-            ? { flex: 1, justifyContent: "center" }
-            : { paddingBottom: 100 }
-        }
-        ListEmptyComponent={() => (
+      {isLoading ? (
+        <Loading />
+      ) : historyByDay?.length > 0 ? (
+        <SectionList
+          px="6"
+          showsVerticalScrollIndicator={false}
+          sections={historyByDay}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <HistoryCard data={item} />}
+          renderSectionHeader={({ section }) => (
+            <Heading
+              color="gray.200"
+              fontSize="md"
+              mt="10"
+              mb="3"
+              fontFamily="heading"
+            >
+              {section.title}
+            </Heading>
+          )}
+          contentContainerStyle={
+            historyByDay.length === 0
+              ? { flex: 1, justifyContent: "center" }
+              : { paddingBottom: 100 }
+          }
+        />
+      ) : (
+        <Center flex="1">
           <Text color="gray.100" textAlign="center">
             Não há exercicios registrados ainda.{"\n"} Vai treinar o que hoje?
           </Text>
-        )}
-      />
+        </Center>
+      )}
     </VStack>
   );
 }
