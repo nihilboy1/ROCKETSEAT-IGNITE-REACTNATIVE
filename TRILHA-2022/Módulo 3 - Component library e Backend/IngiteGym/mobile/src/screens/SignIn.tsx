@@ -93,7 +93,7 @@ export function SignIn() {
                 errorMessage={errors.email?.message}
               />
             )}
-          ></Controller>
+          />
           <Controller
             control={control}
             name="password"

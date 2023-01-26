@@ -4,8 +4,6 @@ import {
 } from "@react-navigation/native-stack";
 import { SignIn } from "@screens/SignIn";
 import { SignUp } from "@screens/SignUp";
-import { AuthContext } from "@contexts/AuthContext";
-import { useContext } from "react";
 
 type AuthRoutes = {
   signIn: undefined;
